@@ -1,14 +1,23 @@
 import React from 'react';
 import './App.css';
-import {Link} from 'react-router-dom';
+import {Grid} from 'semantic-ui-react';
+import ColorPanel from './ColorPanel/ColorPanel';
+import SidePanel from './SidePanel/SidePanel';
+import Messages from './Messages/Messages';
+import MetaPanel from './MetaPanel/MetaPanel';
 
 function App() {
     return (
-        <div className="App">
-            <Link to={'/logout'}>Logout</Link><br/>
-            <Link to={'/login'}>Login</Link><br/>
-
-        </div>
+        <Grid columns='equal' className='app'>
+            <ColorPanel/>
+            <SidePanel/>
+            <Grid.Column style={{marginLeft: 320}}>
+                <Messages/>
+            </Grid.Column>
+            <Grid.Column style={{width: 4}}>
+                <MetaPanel/>
+            </Grid.Column>
+        </Grid>
     );
 }
 
