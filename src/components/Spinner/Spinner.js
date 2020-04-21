@@ -1,11 +1,11 @@
 import React from 'react';
-import './Spinner.css';
+import {Dimmer, Loader} from 'semantic-ui-react';
 
-const spinner = () => {
+const spinner = ({text = 'Preparing Chat ...'}) => {
     return (
-        <div className='spinner-overlay'>
-            <div className='spinner-container'/>
-        </div>
+        <Dimmer active>
+            <Loader size='huge' content={text}/>
+        </Dimmer>
     );
 };
 
