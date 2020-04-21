@@ -3,7 +3,6 @@ import firebase from '../../firebase';
 import {Button, Form, Grid, Header, Icon, Message, Segment} from 'semantic-ui-react';
 import {Link} from 'react-router-dom';
 
-
 const initialState = {
     email   : '',
     password: '',
@@ -25,11 +24,6 @@ const reducer = (state, action) => {
                 loading: false,
                 errors : state.errors.concat(action.errors)
             };
-        case 'SUCCESS_LOGIN':
-            return {
-                ...state,
-                loading: false
-            };
         case 'SET_ERRORS':
             return {
                 ...state,
@@ -40,6 +34,8 @@ const reducer = (state, action) => {
                 ...state,
                 [action.key]: action.value
             };
+        default:
+            return state;
     }
 };
 
@@ -66,9 +62,6 @@ const Login = () => {
             firebase
                 .auth()
                 .signInWithEmailAndPassword(email, password)
-                .then(user => {
-
-                })
                 .catch(e => dispatch({type: 'ERROR_LOGIN', errors: e}));
         }
     };
