@@ -1,14 +1,32 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import App from './components/App';
 import * as serviceWorker from './serviceWorker';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
+import Login from './components/Auth/Login';
+import Register from './components/Auth/Register';
+
+import 'semantic-ui-css/semantic.min.css';
+
+
+const Root = () => (
+    <Router>
+        <Switch>
+            <Route exact path='/'>
+                <App/>
+            </Route>
+            <Route path='/login'>
+                <Login/>
+            </Route>
+            <Route path='/register'>
+                <Register/>
+            </Route>
+        </Switch>
+    </Router>
+);
+
+ReactDOM.render(<Root/>, document.getElementById('root')
 );
 
 // If you want your app to work offline and load faster, you can change
