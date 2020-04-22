@@ -1,15 +1,10 @@
 import React from 'react';
 import {Icon, Menu} from 'semantic-ui-react';
 import {useSelector} from 'react-redux';
-import Spinner from '../../../Spinner/Spinner';
 
-const ChannelsList = ({onSelect, loading, onOpenModal}) => {
+const ChannelsList = ({onSelect, onOpenModal}) => {
     const currentChannel = useSelector(state => state.channels.currentChannel);
     const channels = useSelector(state => state.channels.channels);
-    React.useEffect(() => {
-        if (currentChannel === null && channels.length !== 0)
-            onSelect(channels[0]);
-    }, [channels]);
 
     return (
         <>
@@ -31,7 +26,7 @@ const ChannelsList = ({onSelect, loading, onOpenModal}) => {
                                 # {ch.name}
                             </Menu.Item>
                         ))
-                        : loading ? <Spinner text='Loading Channels...'/> : null
+                        : null
                 }
             </Menu.Menu>
 
@@ -39,4 +34,4 @@ const ChannelsList = ({onSelect, loading, onOpenModal}) => {
     );
 };
 
-export default React.memo(ChannelsList, (prevProps, nextProps) => prevProps.loading !== nextProps.loading);
+export default ChannelsList;

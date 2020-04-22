@@ -1,31 +1,29 @@
 import React from 'react';
 import firebase from '../../../firebase';
 import {useDispatch, useSelector} from 'react-redux';
+import {channelAddListener, fetchChannels, selectChannel} from '../../../redux/channels/channels.actions';
 import ChannelsList from './ChannelsList/ChannelsList';
 import ChannelsModal from './ChannelsModal/ChannelsModal';
-import {addChannel, selectChannel} from '../../../redux/channels/channels.actions';
+import Spinner from '../../Spinner/Spinner';
 
 const channelsRef = firebase.database().ref('channels');
 
 const Channels = () => {
     const currentUser = useSelector(state => state.user.currentUser);
+    const channelsLoading = useSelector(state => state.channels.isLoading);
     const dispatch = useDispatch();
     const [modalState, setModalState] = React.useState(false);
     const [channel, setChannel] = React.useState({name: '', details: ''});
 
-    const [loading, setLoading] = React.useState(true);
+
+    const [submitNewChannelLoading, setSubmitNewChannelLoading] = React.useState(true);
 
     React.useEffect(() => {
-        addListeners();
-        return () => channelsRef.off();
+        dispatch(fetchChannels());
+        dispatch(channelAddListener(true));
+        return () => dispatch(channelAddListener(false));
     }, []);
 
-    const addListeners = () => {
-        channelsRef.on('child_added', snap => {
-            dispatch(addChannel(snap.val()));
-            setLoading(false);
-        });
-    };
     const handleChange = e => {
         const channelInput = {
             [e.target.name]: e.target.value
@@ -39,8 +37,7 @@ const Channels = () => {
     const handleSubmit = e => {
         e.preventDefault();
         if (channel.name.trim() && channel.details.trim()) {
-            setLoading(true);
-
+            setSubmitNewChannelLoading(true);
             const key = channelsRef.push().key;
             const data = {
                 id       : key,
@@ -58,16 +55,12 @@ const Channels = () => {
                 .then(() => {
                     setChannel({name: '', details: ''});
                     closeModal();
-                }).catch(e => {
-                console.log(e);
-            });
+                }).catch(e => console.log(e))
+                .finally(() => setSubmitNewChannelLoading(false));
         }
     };
 
-    const closeModal = () => {
-        if (!loading)
-            setModalState(false);
-    };
+    const closeModal = () => setModalState(false);
 
     const openModal = () => setModalState(true);
 
@@ -75,15 +68,21 @@ const Channels = () => {
 
     return (
         <>
-            <ChannelsList onSelect={changeChannel} loading={loading} onOpenModal={openModal}/>
+            {
+                channelsLoading ? <Spinner page text={'Channels is Loading ...'}/> :
+                    <>
+                        <ChannelsList onSelect={changeChannel} onOpenModal={openModal}/>
 
-            <ChannelsModal onSubmit={handleSubmit}
-                           loading={loading}
-                           onChange={handleChange}
-                           onClose={closeModal}
-                           open={modalState}/>
+                        <ChannelsModal onSubmit={handleSubmit}
+                                       loading={submitNewChannelLoading}
+                                       onChange={handleChange}
+                                       onClose={closeModal}
+                                       open={modalState}/>
 
+                    </>
+            }
         </>
+
     );
 };
 
