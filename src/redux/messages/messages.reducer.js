@@ -2,6 +2,7 @@ import {
     FETCH_MESSAGES_FAIL,
     FETCH_MESSAGES_START,
     FETCH_MESSAGES_SUCCESS,
+    NEW_MESSAGE,
     SEND_MESSAGE_FAIL,
     SEND_MESSAGE_START,
     SEND_MESSAGE_SUCCESS
@@ -16,6 +17,11 @@ const initialState = {
 };
 export default (state = initialState, action) => {
     switch (action.type) {
+        case NEW_MESSAGE:
+            return {
+                ...state,
+                messages: state.messages.concat(action.message)
+            };
         case SEND_MESSAGE_START:
             return {
                 ...state,

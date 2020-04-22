@@ -2,6 +2,7 @@ import {
     FETCH_MESSAGES_FAIL,
     FETCH_MESSAGES_START,
     FETCH_MESSAGES_SUCCESS,
+    NEW_MESSAGE,
     SEND_MESSAGE_FAIL,
     SEND_MESSAGE_START,
     SEND_MESSAGE_SUCCESS
@@ -44,10 +45,31 @@ const fetchMessagesSuccess = messages => ({type: FETCH_MESSAGES_SUCCESS, message
 
 export const fetchMessages = (channelId) => async dispatch => {
     dispatch(fetchMessagesStart());
-    messagesRef.child(channelId).on('value', snap => {
-        const msgs = [];
-        Object.entries(snap.val()).forEach(([, msg]) => msgs.push(msg));
-        messagesRef.off('value');
-        dispatch(fetchMessagesSuccess(msgs));
+    return new Promise(resolve => {
+        messagesRef.child(channelId).on('value', snap => {
+            const msgs = [];
+            if (snap.val())
+                Object.entries(snap.val()).forEach(([id, msg]) => msgs.push({id, ...msg}));
+            messagesRef.child(channelId).off('value');
+            dispatch(fetchMessagesSuccess(msgs));
+            resolve();
+        });
     });
+};
+
+const newMessage = message => ({type: NEW_MESSAGE, message});
+export const newMessagesListener = (state, channelId) => async (dispatch, getState) => {
+    if (state) {
+        messagesRef
+            .child(channelId)
+            .on('child_added', snap => {
+                const messages = getState().messages.messages;
+                const message = {id: snap.key, ...snap.val()};
+                if (!messages.find(msg => msg.id === message.id))
+                    dispatch(newMessage(message));
+            });
+    }
+    else {
+        messagesRef.child(channelId).off('child_added');
+    }
 };
