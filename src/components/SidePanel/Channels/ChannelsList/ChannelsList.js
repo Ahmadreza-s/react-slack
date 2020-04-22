@@ -7,7 +7,6 @@ const ChannelsList = ({onSelect, loading, onOpenModal}) => {
     const currentChannel = useSelector(state => state.channels.currentChannel);
     const channels = useSelector(state => state.channels.channels);
     React.useEffect(() => {
-        console.log(currentChannel, channels);
         if (currentChannel === null && channels.length !== 0)
             onSelect(channels[0]);
     }, [channels]);

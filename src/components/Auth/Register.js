@@ -92,7 +92,6 @@ const Register = () => {
 
                         })
                         .catch(e => dispatch({type: 'ERROR_REGISTER', errors: e}));
-                    console.log('userForm created', u);
                 })
                 .catch(e => dispatch({type: 'ERROR_REGISTER', errors: e}));
         }
