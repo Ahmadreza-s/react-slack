@@ -50,4 +50,6 @@ const channelsModal = ({open, onClose, onSubmit, onChange, loading}) => {
     );
 };
 
-export default React.memo(channelsModal, (prevProps, nextProps) => (prevProps.loading !== nextProps.loading) || prevProps.open !== nextProps.open);
+export default channelsModal;
+/*export default React.memo(channelsModal, (prevProps, nextProps) =>
+ (prevProps.loading === nextProps.loading) && prevProps.open === nextProps.open);*/
