@@ -7,7 +7,7 @@ const Message = ({message, user}) => {
     return (
         <Comment>
             <Comment.Avatar src={message.user.avatar}/>
-            <Comment.Content className={message.user.id === user.id ? 'message_self' : ''}>
+            <Comment.Content className={message.user.id === user.id ? 'message__self' : ''}>
                 <Comment.Author as='a'>{message.user.name}</Comment.Author>
                 <Comment.Metadata>{timeFromNow(message.timestamp)}</Comment.Metadata>
                 <Comment.Text>{message.content}</Comment.Text>
