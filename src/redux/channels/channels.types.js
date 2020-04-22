@@ -1,0 +1,3 @@
+export const ADD_CHANNEL = 'ADD_CHANNEL';
+
+export const SELECT_CHANNEL = 'SELECT_CHANNEL';
