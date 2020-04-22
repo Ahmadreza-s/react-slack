@@ -1,6 +1,6 @@
 import React from 'react';
 import {Menu} from 'semantic-ui-react';
-import UserPanel from './UserPanel/UserPanel';
+import UserPanel from './UserPanel';
 
 const SidePanel = () => {
     return (
