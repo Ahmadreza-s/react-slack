@@ -25,8 +25,7 @@ export default (state = initialState, action) => {
         case SEND_MESSAGE_SUCCESS:
             return {
                 ...state,
-                isSending: false,
-                messages : state.messages.concat(action.message)
+                isSending: false
             };
         case SEND_MESSAGE_FAIL:
             return {

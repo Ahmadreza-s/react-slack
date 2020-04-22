@@ -8,6 +8,8 @@ import {
 } from './messages.types';
 import firebase from '../../firebase';
 
+const messagesRef = firebase.database().ref('messages');
+
 const sendMessageStart = () => ({type: SEND_MESSAGE_START});
 const sendMessageFail = error => ({type: SEND_MESSAGE_FAIL, error});
 const sendMessageSuccess = () => ({type: SEND_MESSAGE_SUCCESS});
@@ -26,9 +28,7 @@ export const sendMessage = message => async (dispatch, getState) => {
         }
     };
     try {
-        await firebase
-            .database()
-            .ref('messages')
+        await messagesRef
             .child(channelId)
             .push()
             .set(msgToSend);
@@ -40,9 +40,14 @@ export const sendMessage = message => async (dispatch, getState) => {
 
 const fetchMessagesStart = () => ({type: FETCH_MESSAGES_START});
 const fetchMessagesFail = error => ({type: FETCH_MESSAGES_FAIL, error});
-const fetchMessagesSuccess = () => ({type: FETCH_MESSAGES_SUCCESS});
+const fetchMessagesSuccess = messages => ({type: FETCH_MESSAGES_SUCCESS, messages});
 
-export const fetchMessages = () => async dispatch => {
+export const fetchMessages = (channelId) => async dispatch => {
     dispatch(fetchMessagesStart());
-    //add logic for fetch messages
+    messagesRef.child(channelId).on('value', snap => {
+        const msgs = [];
+        Object.entries(snap.val()).forEach(([, msg]) => msgs.push(msg));
+        messagesRef.off('value');
+        dispatch(fetchMessagesSuccess(msgs));
+    });
 };
