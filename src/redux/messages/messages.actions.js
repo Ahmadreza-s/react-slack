@@ -15,7 +15,7 @@ const sendMessageSuccess = () => ({type: SEND_MESSAGE_SUCCESS});
 export const sendMessage = message => async (dispatch, getState) => {
     dispatch(sendMessageStart());
     const user = getState().user.currentUser;
-    const channelId = getState().channels.currentChannel;
+    const channelId = getState().channels.currentChannel.id;
     const msgToSend = {
         timestamp: firebase.database.ServerValue.TIMESTAMP,
         content  : message,
@@ -32,7 +32,6 @@ export const sendMessage = message => async (dispatch, getState) => {
             .child(channelId)
             .push()
             .set(msgToSend);
-
         dispatch(sendMessageSuccess());
     } catch (e) {
         dispatch(sendMessageFail(e.message));
