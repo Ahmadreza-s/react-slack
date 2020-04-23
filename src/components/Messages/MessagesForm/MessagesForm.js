@@ -7,10 +7,7 @@ import FileModal from './FileModal/FileModal';
 const MessagesForm = () => {
     const isSending = useSelector(state => state.messages.isSending);
     const sendingMessageError = useSelector(state => state.messages.sendingMessageError);
-    const isUploading = useSelector(state => state.messages.isUploading);
     const isUploadingDone = useSelector(state => state.messages.isUploadingDone);
-    const uploadPercent = useSelector(state => state.messages.uploadPercent);
-    const uploadError = useSelector(state => state.messages.uploadError);
 
     const [message, setMessage] = React.useState('');
     const [modalState, setModalState] = React.useState(false);
@@ -29,8 +26,10 @@ const MessagesForm = () => {
     };
     //todo:add some logic for handling error
 
-    if (isUploadingDone && modalState)
-        setModalState(false);
+    React.useEffect(() => {
+        if (isUploadingDone && modalState)
+            setModalState(false);
+    }, [isUploadingDone, modalState]);
 
     return (
         <Segment className='message__form'>
