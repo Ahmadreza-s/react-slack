@@ -11,6 +11,9 @@ const MessagesForm = () => {
 
     const [message, setMessage] = React.useState('');
     const [modalState, setModalState] = React.useState(false);
+
+    const inputRef = React.useRef(null);
+
     const dispatch = useDispatch();
     const changeHandler = e => setMessage(e.target.value);
     const sendMessageHandler = () => {
@@ -31,6 +34,8 @@ const MessagesForm = () => {
             setModalState(false);
     }, [isUploadingDone, modalState]);
 
+    React.useEffect(() => inputRef.current.focus(), [isSending]);
+
     return (
         <Segment className='message__form'>
             <Input fluid
@@ -42,6 +47,7 @@ const MessagesForm = () => {
                    placeholder='Write Your Message'
                    onChange={changeHandler}
                    onKeyPress={keyPressHandler}
+                   ref={inputRef}
                    className={sendingMessageError ? 'error' : ''}
                    value={message}/>
 
