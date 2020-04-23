@@ -16,11 +16,11 @@ const Channels = () => {
     const [channel, setChannel] = React.useState({name: '', details: ''});
 
 
-    const [submitNewChannelLoading, setSubmitNewChannelLoading] = React.useState(true);
+    const [submitNewChannelLoading, setSubmitNewChannelLoading] = React.useState(false);
 
     React.useEffect(() => {
-        dispatch(fetchChannels());
-        dispatch(channelAddListener(true));
+        dispatch(fetchChannels())
+            .then(() => dispatch(channelAddListener(true)));
         return () => dispatch(channelAddListener(false));
     }, []);
 
