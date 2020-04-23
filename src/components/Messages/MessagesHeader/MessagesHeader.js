@@ -1,5 +1,5 @@
 import React from 'react';
-import {Header, Icon, Input, Segment} from 'semantic-ui-react';
+import {Header, Icon, Segment} from 'semantic-ui-react';
 
 const MessagesHeader = ({channelName, channelUsersCount}) => {
     return (
@@ -20,9 +20,14 @@ const MessagesHeader = ({channelName, channelUsersCount}) => {
 
                 </Header.Subheader>
             </Header>
-            <Header floated='right'>
-                <Input size='mini' icon='search' name='searchTerm' placeholder='Search Messages'/>
-            </Header>
+            {/*
+             /*
+             todo: add some logic for searching messages
+             */
+                /*
+                 <Header floated='right'>
+                 <Input size='mini' icon='search' name='searchTerm' placeholder='Search Messages'/>
+                 </Header>*/}
         </Segment>
     );
 };
