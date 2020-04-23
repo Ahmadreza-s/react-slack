@@ -20,12 +20,24 @@ const Messages = () => {
             .then(() => dispatch(newMessagesListener(true, currentChannel.id)));
         return () => dispatch(newMessagesListener(false, currentChannel.id));
     }, [currentChannel, dispatch]);
+
+    React.useEffect(() => {
+        goToBottom();
+    }, [messages]);
+
+    const goToBottom = () => {
+        const scrollingElement = (document.scrollingElement || document.body);
+        scrollingElement.scrollTop = scrollingElement.scrollHeight;
+        const chatList = document.getElementById('chat_list') || null;
+        if (chatList)
+            chatList.scrollTop = chatList.scrollHeight - chatList.clientHeight;
+    };
     return (
         <>
             <MessagesHeader/>
 
             <Segment>
-                <Comment.Group className='messages'>
+                <Comment.Group id='chat_list' className='messages'>
                     {
                         isFetching ? <Spinner text={'Loading Messages ...'}/> :
                             messages.length > 0 ? messages.map(msg => <Message key={msg.id}
