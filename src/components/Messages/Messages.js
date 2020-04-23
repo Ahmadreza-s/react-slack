@@ -32,9 +32,16 @@ const Messages = () => {
         if (chatList)
             chatList.scrollTop = chatList.scrollHeight - chatList.clientHeight;
     };
+
+    const channelUsersCount = () => {
+        if (isFetching)
+            return null;
+        return new Set(messages.map(msg => msg.user).map(user => user.id)).size;
+    };
     return (
         <>
-            <MessagesHeader/>
+            <MessagesHeader channelName={currentChannel.name}
+                            channelUsersCount={channelUsersCount()}/>
 
             <Segment>
                 <Comment.Group id='chat_list' className='messages'>
