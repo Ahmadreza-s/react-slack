@@ -69,7 +69,7 @@ const Channels = () => {
     return (
         <>
             {
-                channelsLoading ? <Spinner page text={'Channels are Loading ...'}/> :
+                channelsLoading ? <Spinner page text={'Loading Some Data ...'}/> :
                     <>
                         <ChannelsList onSelect={changeChannel} onOpenModal={openModal}/>
 
