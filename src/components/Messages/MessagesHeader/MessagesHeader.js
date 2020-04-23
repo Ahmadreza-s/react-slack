@@ -4,7 +4,7 @@ import {Header, Icon, Input, Segment} from 'semantic-ui-react';
 const MessagesHeader = () => {
     return (
         <Segment clearing>
-            <Header fluid floated='left' as='h2' style={{marginBottom: 0}}>
+            <Header floated='left' as='h2' style={{marginBottom: 0}}>
                 <span>
                     Channel
                     <Icon name='star outline'/>
