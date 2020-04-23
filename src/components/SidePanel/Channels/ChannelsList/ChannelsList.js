@@ -13,7 +13,7 @@ const ChannelsList = ({onSelect, onOpenModal}) => {
 
     return (
         <>
-            <Menu.Menu style={{paddingBottom: '2em', paddingTop: '1.2em'}}>
+            <Menu.Menu className='menu' style={{paddingTop: '1.2em'}}>
                 <Menu.Item>
                 <span>
                     <Icon name='exchange'/> CHANNELS
