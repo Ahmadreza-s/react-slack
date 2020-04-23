@@ -6,6 +6,11 @@ const ChannelsList = ({onSelect, onOpenModal}) => {
     const currentChannel = useSelector(state => state.channels.currentChannel);
     const channels = useSelector(state => state.channels.channels);
 
+    const selectChannel = channel => {
+        if (channel.id !== currentChannel.id)
+            onSelect(channel);
+    };
+
     return (
         <>
             <Menu.Menu style={{paddingBottom: '2em', paddingTop: '1.2em'}}>
@@ -21,7 +26,7 @@ const ChannelsList = ({onSelect, onOpenModal}) => {
                             <Menu.Item key={ch.id}
                                        name={ch.name}
                                        style={{opacity: .7, cursor: 'pointer'}}
-                                       onClick={() => onSelect(ch)}
+                                       onClick={() => selectChannel(ch)}
                                        active={ch.id === currentChannel?.id}>
                                 # {ch.name}
                             </Menu.Item>
