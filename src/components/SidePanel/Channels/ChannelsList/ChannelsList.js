@@ -7,7 +7,7 @@ const ChannelsList = ({onSelect, onOpenModal}) => {
     const channels = useSelector(state => state.channels.channels);
 
     const selectChannel = channel => {
-        if (channel.id !== currentChannel.id)
+        if (!currentChannel || channel.id !== currentChannel.id)
             onSelect(channel);
     };
 
