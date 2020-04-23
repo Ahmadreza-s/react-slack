@@ -5,7 +5,11 @@ import {
     NEW_MESSAGE,
     SEND_MESSAGE_FAIL,
     SEND_MESSAGE_START,
-    SEND_MESSAGE_SUCCESS
+    SEND_MESSAGE_SUCCESS,
+    UPLOAD_MEDIA_FAIL,
+    UPLOAD_MEDIA_PERCENT,
+    UPLOAD_MEDIA_START,
+    UPLOAD_MEDIA_SUCCESS
 } from './messages.types';
 
 const initialState = {
@@ -13,10 +17,40 @@ const initialState = {
     messages             : [],
     isSending            : false,
     sendingMessageError  : null,
-    fetchingMessagesError: null
+    fetchingMessagesError: null,
+    isUploading          : false,
+    isUploadingDone      : false,
+    uploadPercent        : 0,
+    uploadError          : null
 };
 export default (state = initialState, action) => {
     switch (action.type) {
+        case UPLOAD_MEDIA_START:
+            return {
+                ...state,
+                isUploading    : true,
+                isUploadingDone: false,
+                uploadPercent  : 0,
+                uploadError    : null
+            };
+        case UPLOAD_MEDIA_PERCENT:
+            return {
+                ...state,
+                uploadPercent: action.percent
+            };
+        case UPLOAD_MEDIA_SUCCESS:
+            return {
+                ...state,
+                isUploading    : false,
+                isUploadingDone: true,
+                uploadPercent  : 100
+            };
+        case UPLOAD_MEDIA_FAIL:
+            return {
+                ...state,
+                isUploading: false,
+                uploadError: action.error
+            };
         case NEW_MESSAGE:
             return {
                 ...state,

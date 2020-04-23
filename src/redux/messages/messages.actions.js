@@ -5,7 +5,11 @@ import {
     NEW_MESSAGE,
     SEND_MESSAGE_FAIL,
     SEND_MESSAGE_START,
-    SEND_MESSAGE_SUCCESS
+    SEND_MESSAGE_SUCCESS,
+    UPLOAD_MEDIA_FAIL,
+    UPLOAD_MEDIA_PERCENT,
+    UPLOAD_MEDIA_START,
+    UPLOAD_MEDIA_SUCCESS
 } from './messages.types';
 import firebase from '../../firebase';
 
@@ -37,6 +41,49 @@ export const sendMessage = message => async (dispatch, getState) => {
     } catch (e) {
         dispatch(sendMessageFail(e.message));
     }
+};
+
+const uploadMediaStart = () => ({type: UPLOAD_MEDIA_START});
+const uploadMediaFail = error => ({type: UPLOAD_MEDIA_FAIL, error});
+const uploadMediaSuccess = () => ({type: UPLOAD_MEDIA_SUCCESS});
+const uploadMediaPercent = percent => ({type: UPLOAD_MEDIA_PERCENT, percent});
+
+export const uploadMedia = (file, filepath, metadata) => async (dispatch, getState) => {
+    dispatch(uploadMediaStart());
+    const currentChannelId = getState().channels.currentChannel.id;
+    const user = getState().user.currentUser;
+    const storageRef = firebase.storage().ref(filepath);
+    const uploadTask = storageRef.put(file, metadata);
+    uploadTask.on('state_changed',
+        snap => dispatch(uploadMediaPercent(Math.round((snap.bytesTransferred / snap.totalBytes) * 100))),
+        error => dispatch(uploadMediaFail(error.message)),
+        async () => {
+            try {
+                const url = await uploadTask.snapshot.ref.getDownloadURL();
+
+                const msgToSend = {
+                    timestamp: firebase.database.ServerValue.TIMESTAMP,
+                    image    : url,
+                    user     : {
+                        id    : user.id,
+                        name  : user.displayName,
+                        avatar: user.avatar
+                    }
+                };
+
+                try {
+                    await messagesRef
+                        .child(currentChannelId)
+                        .push()
+                        .set(msgToSend);
+                    dispatch(uploadMediaSuccess());
+                } catch (e) {
+                    dispatch(uploadMediaFail(e.message()));
+                }
+            } catch (e) {
+                dispatch(uploadMediaFail(e.message()));
+            }
+        });
 };
 
 const fetchMessagesStart = () => ({type: FETCH_MESSAGES_START});
