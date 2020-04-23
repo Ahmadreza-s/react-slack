@@ -1,18 +1,28 @@
 import React from 'react';
 import {Header, Icon, Segment} from 'semantic-ui-react';
 
-const MessagesHeader = ({channelName, channelUsersCount}) => {
+const MessagesHeader = ({channelName, channelUsersCount, isPrivate = false}) => {
     return (
         <Segment clearing>
             <Header floated='left' as='h2' style={{marginBottom: 0}}>
                 <span>
-                    {`#${channelName} `}
-                    <Icon name='star outline'/>
+                    {
+                        isPrivate ?
+                            `@${channelName} `
+                            :
+                            `#${channelName} `
+                    }
+                    {
+                        !isPrivate &&
+                        <Icon name='star outline'/>
+                    }
                 </span>
                 <Header.Subheader>
                     {
-                        channelUsersCount ? `${channelUsersCount} User${channelUsersCount > 1 ? 's' : ''}` :
-                            <span>
+                        isPrivate ? 'Private' :
+                            channelUsersCount !== null ?
+                                `${channelUsersCount} User${channelUsersCount > 1 ? 's' : ''}` :
+                                <span>
                                 <Icon name='spinner' loading size='small'/>
                                  Loading users count
                             </span>

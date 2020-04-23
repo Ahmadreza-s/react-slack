@@ -41,7 +41,8 @@ const Messages = () => {
     return (
         <>
             <MessagesHeader channelName={currentChannel.name}
-                            channelUsersCount={channelUsersCount()}/>
+                            channelUsersCount={channelUsersCount()}
+                            isPrivate={currentChannel.isPrivate}/>
 
             <Segment>
                 <Comment.Group id='chat_list' className='messages'>
