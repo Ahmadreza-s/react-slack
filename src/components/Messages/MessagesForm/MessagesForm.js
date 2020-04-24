@@ -34,7 +34,7 @@ const MessagesForm = () => {
             setModalState(false);
     }, [isUploadingDone, modalState]);
 
-    React.useEffect(() => inputRef.current.focus(), [isSending]);
+    React.useEffect(() => inputRef.current.focus());
 
     return (
         <Segment className='message__form'>
