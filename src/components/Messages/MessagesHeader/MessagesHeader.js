@@ -12,10 +12,10 @@ const MessagesHeader = ({channelName, channelUsersCount, isPrivate = false}) => 
                             :
                             `#${channelName} `
                     }
-                    {
-                        !isPrivate &&
-                        <Icon name='star outline'/>
-                    }
+                    {/*{
+                     !isPrivate &&
+                     <Icon name='star outline'/>
+                     }*/}
                 </span>
                 <Header.Subheader>
                     {
