@@ -19,8 +19,10 @@ function App() {
                         <Grid.Column style={{marginLeft: 320}}>
                             <Messages/>
                         </Grid.Column>
-                        <Grid.Column style={{width: 4}}>
-                            <MetaPanel/>
+                        <Grid.Column width={4}>
+                            {
+                                !currentChannel.isPrivate && <MetaPanel/>
+                            }
                         </Grid.Column>
                     </> :
                     <Grid.Column style={{marginLeft: 312}}>
