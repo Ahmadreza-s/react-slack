@@ -19,7 +19,7 @@ const MessagesHeader = ({channelName, channelUsersCount, isPrivate = false}) => 
                 </span>
                 <Header.Subheader>
                     {
-                        isPrivate ? 'Private' :
+                        isPrivate ? 'Private Chat' :
                             channelUsersCount !== null ?
                                 `${channelUsersCount} User${channelUsersCount > 1 ? 's' : ''}` :
                                 <span>
