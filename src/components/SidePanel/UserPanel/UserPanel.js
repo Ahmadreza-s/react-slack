@@ -28,7 +28,7 @@ const UserPanel = () => {
                     {/*App Header*/}
                     <Header inverted floated='left' as='h2'>
                         <Icon name='code'/>
-                        <Header.Content>DevChat</Header.Content>
+                        <Header.Content>Changiz Chat</Header.Content>
                     </Header>
                 </Grid.Row>
 

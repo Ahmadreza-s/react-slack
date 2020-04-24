@@ -80,7 +80,7 @@ const Login = () => {
                         icon>
                     <Icon name='code branch'
                           color='violet'/>
-                    Login to DevChat
+                    Login to Changiz Chat
                 </Header>
                 <Form size='large'
                       onSubmit={handleSubmit}>

@@ -118,7 +118,7 @@ const Register = () => {
                         icon>
                     <Icon name='puzzle piece'
                           color='orange'/>
-                    Register for DevChat
+                    Register for Changiz Chat
                 </Header>
                 <Form size='large'
                       onSubmit={handleSubmit}>
