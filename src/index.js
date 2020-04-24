@@ -38,9 +38,12 @@ const Root = () => {
     return (
         loading ? <Spinner/> :
             <Switch>
-                <Route exact path='/'>
-                    <App/>
-                </Route>
+                {
+                    currentUser &&
+                    <Route exact path='/'>
+                        <App/>
+                    </Route>
+                }
                 {
                     !currentUser &&
                     <Route path='/login'>
@@ -59,7 +62,11 @@ const Root = () => {
                         <Logout/>
                     </Route>
                 }
-                <Redirect to={'/'}/>
+
+                {
+                    currentUser ? <Redirect to={'/'}/> :
+                        <Redirect to='/login'/>
+                }
             </Switch>
     );
 };
