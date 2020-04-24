@@ -14,6 +14,8 @@ import {
 import firebase from '../../firebase';
 
 const messagesRef = firebase.database().ref('messages');
+const privateMessagesRef = firebase.database().ref('privateMessages');
+const getMessagesRef = (isPrivate) => isPrivate ? privateMessagesRef : messagesRef;
 
 const sendMessageStart = () => ({type: SEND_MESSAGE_START});
 const sendMessageFail = error => ({type: SEND_MESSAGE_FAIL, error});
@@ -22,7 +24,7 @@ const sendMessageSuccess = () => ({type: SEND_MESSAGE_SUCCESS});
 export const sendMessage = message => async (dispatch, getState) => {
     dispatch(sendMessageStart());
     const user = getState().user.currentUser;
-    const channelId = getState().channels.currentChannel.id;
+    const currentChannel = getState().channels.currentChannel;
     const msgToSend = {
         timestamp: firebase.database.ServerValue.TIMESTAMP,
         content  : message,
@@ -33,8 +35,8 @@ export const sendMessage = message => async (dispatch, getState) => {
         }
     };
     try {
-        await messagesRef
-            .child(channelId)
+        await getMessagesRef(currentChannel.isPrivate)
+            .child(currentChannel.id)
             .push()
             .set(msgToSend);
         dispatch(sendMessageSuccess());
@@ -50,7 +52,7 @@ const uploadMediaPercent = percent => ({type: UPLOAD_MEDIA_PERCENT, percent});
 
 export const uploadMedia = (file, filepath, metadata) => async (dispatch, getState) => {
     dispatch(uploadMediaStart());
-    const currentChannelId = getState().channels.currentChannel.id;
+    const currentChannel = getState().channels.currentChannel;
     const user = getState().user.currentUser;
     const storageRef = firebase.storage().ref(filepath);
     const uploadTask = storageRef.put(file, metadata);
@@ -72,8 +74,8 @@ export const uploadMedia = (file, filepath, metadata) => async (dispatch, getSta
                 };
 
                 try {
-                    await messagesRef
-                        .child(currentChannelId)
+                    await getMessagesRef(currentChannel.isPrivate)
+                        .child(currentChannel.id)
                         .push()
                         .set(msgToSend);
                     dispatch(uploadMediaSuccess());
@@ -90,14 +92,14 @@ const fetchMessagesStart = () => ({type: FETCH_MESSAGES_START});
 const fetchMessagesFail = error => ({type: FETCH_MESSAGES_FAIL, error});
 const fetchMessagesSuccess = messages => ({type: FETCH_MESSAGES_SUCCESS, messages});
 
-export const fetchMessages = (channelId) => async dispatch => {
+export const fetchMessages = channel => async dispatch => {
     dispatch(fetchMessagesStart());
     return new Promise(resolve => {
-        messagesRef.child(channelId).on('value', snap => {
+        getMessagesRef(channel.isPrivate).child(channel.id).on('value', snap => {
             const msgs = [];
             if (snap.val())
                 Object.entries(snap.val()).forEach(([id, msg]) => msgs.push({id, ...msg}));
-            messagesRef.child(channelId).off('value');
+            getMessagesRef(channel.isPrivate).child(channel.id).off('value');
             dispatch(fetchMessagesSuccess(msgs));
             resolve();
         });
@@ -105,10 +107,10 @@ export const fetchMessages = (channelId) => async dispatch => {
 };
 
 const newMessage = message => ({type: NEW_MESSAGE, message});
-export const newMessagesListener = (state, channelId) => async (dispatch, getState) => {
+export const newMessagesListener = (state, channel) => async (dispatch, getState) => {
     if (state) {
-        messagesRef
-            .child(channelId)
+        getMessagesRef(channel.isPrivate)
+            .child(channel.id)
             .on('child_added', snap => {
                 const messages = getState().messages.messages;
                 const message = {id: snap.key, ...snap.val()};
@@ -117,6 +119,6 @@ export const newMessagesListener = (state, channelId) => async (dispatch, getSta
             });
     }
     else {
-        messagesRef.child(channelId).off('child_added');
+        getMessagesRef(channel.isPrivate).child(channel.id).off('child_added');
     }
 };
