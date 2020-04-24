@@ -10,6 +10,7 @@ const FileModal = ({open, onClose}) => {
     const dispatch = useDispatch();
     const isUploading = useSelector(state => state.messages.isUploading);
     const uploadPercent = useSelector(state => state.messages.uploadPercent);
+    const currentChannel = useSelector(state => state.channels.currentChannel);
     const [file, setFile] = React.useState();
     const onFileChange = e => {
         const file = e.target.files[0];
@@ -20,7 +21,11 @@ const FileModal = ({open, onClose}) => {
     const sendFile = () => {
         if (file && ['image/jpeg', 'image/png'].includes(mime.lookup(file.name))) {
             const metadata = {contentType: mime.lookup(file.name)};
-            const filePath = `chat/public/${uuidv4()}.jpg`;
+            let filePath;
+            if (currentChannel.isPrivate)
+                filePath = `chat/private-${currentChannel.id}`;
+            else
+                filePath = `chat/public/${uuidv4()}.jpg`;
             dispatch(uploadMedia(file, filePath, metadata));
         }
     };
