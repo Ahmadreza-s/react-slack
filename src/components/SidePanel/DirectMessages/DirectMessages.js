@@ -1,5 +1,5 @@
 import React from 'react';
-import {Icon, Menu} from 'semantic-ui-react';
+import {Icon, Label, Menu} from 'semantic-ui-react';
 import {useDispatch, useSelector} from 'react-redux';
 import {fetchUsers, userAddListener, userStatusChangeListener} from '../../../redux/user/user.actions';
 import Spinner from '../../Spinner/Spinner';
@@ -9,6 +9,7 @@ const DirectMessages = () => {
     const currentUser = useSelector(state => state.user.currentUser);
     const currentChannel = useSelector(state => state.channels.currentChannel);
     const isUsersFetching = useSelector(state => state.user.isUsersFetching);
+    const notifications = useSelector(state => state.messages.notifications);
     const users = useSelector(state => state.user.users.sort((a, b) => a.status === 'online' ? -1 : 1));
     const dispatch = useDispatch();
     React.useEffect(() => {
@@ -23,8 +24,12 @@ const DirectMessages = () => {
         };
     }, [dispatch]);
 
+    const getNotificationsCount = channelId => notifications.filter(notification => notification.channelId === channelId).length;
+
+    const getChannelId = userId => userId < currentUser.id ? `${userId}/${currentUser.id}` : `${currentUser.id}/${userId}`;
+
     const userClickHandler = user => {
-        const channelId = user.id < currentUser.id ? `${user.id}/${currentUser.id}` : `${currentUser.id}/${user.id}`;
+        const channelId = getChannelId(user.id);
         const channelData = {
             name     : user.name,
             id       : channelId,
@@ -58,8 +63,14 @@ const DirectMessages = () => {
                                            style={{opacity: .7, fontStyle: 'italic'}}
                                            onClick={() => userClickHandler(user)}
                                            active={isUserActiveChannel(user.id)}>
-                                    <Icon name='circle' color={user.status === 'online' ? 'green' : 'red'}/>
                                     {`@ ${user.name}`}
+                                    <Icon name='circle' color={user.status === 'online' ? 'green' : 'red'}/>
+                                    {
+                                        getNotificationsCount(getChannelId(user.id)) > 0 ?
+                                            <Label color='red'>
+                                                {getNotificationsCount(getChannelId(user.id))}
+                                            </Label> : null
+                                    }
                                 </Menu.Item>
                             ))
                         }

@@ -17,8 +17,8 @@ const Messages = () => {
     const dispatch = useDispatch();
     React.useEffect(() => {
         dispatch(fetchMessages(currentChannel))
-            .then(() => dispatch(newMessagesListener(true, currentChannel)));
-        return () => dispatch(newMessagesListener(false, currentChannel));
+            .then(() => dispatch(newMessagesListener(true)));
+        return () => dispatch(newMessagesListener(false));
     }, [currentChannel, dispatch]);
 
     React.useEffect(() => {

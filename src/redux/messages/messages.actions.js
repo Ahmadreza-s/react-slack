@@ -3,6 +3,7 @@ import {
     FETCH_MESSAGES_START,
     FETCH_MESSAGES_SUCCESS,
     NEW_MESSAGE,
+    NEW_NOTIFICATION,
     SEND_MESSAGE_FAIL,
     SEND_MESSAGE_START,
     SEND_MESSAGE_SUCCESS,
@@ -15,7 +16,7 @@ import firebase from '../../firebase';
 
 const messagesRef = firebase.database().ref('messages');
 const privateMessagesRef = firebase.database().ref('privateMessages');
-const getMessagesRef = (isPrivate) => isPrivate ? privateMessagesRef : messagesRef;
+const getMessagesRef = isPrivate => isPrivate ? privateMessagesRef : messagesRef;
 
 const sendMessageStart = () => ({type: SEND_MESSAGE_START});
 const sendMessageFail = error => ({type: SEND_MESSAGE_FAIL, error});
@@ -90,35 +91,65 @@ export const uploadMedia = (file, filepath, metadata) => async (dispatch, getSta
 
 const fetchMessagesStart = () => ({type: FETCH_MESSAGES_START});
 const fetchMessagesFail = error => ({type: FETCH_MESSAGES_FAIL, error});
-const fetchMessagesSuccess = messages => ({type: FETCH_MESSAGES_SUCCESS, messages});
+const fetchMessagesSuccess = (messages, channelId) => ({type: FETCH_MESSAGES_SUCCESS, messages, channelId});
 
 export const fetchMessages = channel => async dispatch => {
     dispatch(fetchMessagesStart());
     return new Promise(resolve => {
-        getMessagesRef(channel.isPrivate).child(channel.id).on('value', snap => {
+        getMessagesRef(channel.isPrivate).child(channel.id).once('value', snap => {
             const msgs = [];
             if (snap.val())
                 Object.entries(snap.val()).forEach(([id, msg]) => msgs.push({id, ...msg}));
-            getMessagesRef(channel.isPrivate).child(channel.id).off('value');
-            dispatch(fetchMessagesSuccess(msgs));
+            dispatch(fetchMessagesSuccess(msgs, channel.id));
             resolve();
         });
     });
 };
 
 const newMessage = message => ({type: NEW_MESSAGE, message});
-export const newMessagesListener = (state, channel) => async (dispatch, getState) => {
+export const newMessagesListener = state => async (dispatch, getState) => {
+    const users = getState().user.users;
+    const currentUser = getState().user.currentUser;
+    const getChannelId = userId => userId < currentUser.id ? `${userId}/${currentUser.id}` : `${currentUser.id}/${userId}`;
+    const channels = getState().channels.channels.concat(users.map(user => ({
+        id       : getChannelId(user.id),
+        isPrivate: true
+    })));
+
     if (state) {
-        getMessagesRef(channel.isPrivate)
-            .child(channel.id)
-            .on('child_added', snap => {
-                const messages = getState().messages.messages;
-                const message = {id: snap.key, ...snap.val()};
-                if (!messages.find(msg => msg.id === message.id))
-                    dispatch(newMessage(message));
-            });
+        const currentChannel = getState().channels.currentChannel;
+        channels.forEach(channel => {
+            //https://stackoverflow.com/a/48158673   :
+            //faghat akharin payam hayi ke ezafe mishe ro listen mikonim
+            //ke betunim bahash notificaion befrestim
+            const startKey = getMessagesRef(channel.isPrivate).push().key;
+
+            getMessagesRef(channel.isPrivate)
+                .child(channel.id)
+                .orderByKey()
+                .startAt(startKey)
+                .on('child_added', snap => {
+                    const messages = getState().messages.messages;
+                    const message = {id: snap.key, ...snap.val()};
+
+                    if (currentChannel.id === channel.id) {
+                        if (!messages.find(msg => msg.id === message.id))
+                            dispatch(newMessage(message));
+                    }
+                    else
+                        dispatch({
+                            type        : NEW_NOTIFICATION,
+                            notification: {
+                                messageId: message.id,
+                                channelId: channel.id
+                            }
+                        });
+                });
+        });
+
     }
-    else {
-        getMessagesRef(channel.isPrivate).child(channel.id).off('child_added');
-    }
+    else
+        channels.forEach(channel => {
+            getMessagesRef(channel.isPrivate).child(channel.id).off('child_added');
+        });
 };

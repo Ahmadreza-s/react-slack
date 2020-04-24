@@ -3,6 +3,7 @@ import {
     FETCH_MESSAGES_START,
     FETCH_MESSAGES_SUCCESS,
     NEW_MESSAGE,
+    NEW_NOTIFICATION,
     SEND_MESSAGE_FAIL,
     SEND_MESSAGE_START,
     SEND_MESSAGE_SUCCESS,
@@ -21,7 +22,8 @@ const initialState = {
     isUploading          : false,
     isUploadingDone      : false,
     uploadPercent        : 0,
-    uploadError          : null
+    uploadError          : null,
+    notifications        : []
 };
 export default (state = initialState, action) => {
     switch (action.type) {
@@ -82,14 +84,20 @@ export default (state = initialState, action) => {
         case FETCH_MESSAGES_SUCCESS:
             return {
                 ...state,
-                isFetching: false,
-                messages  : action.messages
+                isFetching   : false,
+                messages     : action.messages,
+                notifications: state.notifications.filter(noti => noti.channelId !== action.channelId)
             };
         case FETCH_MESSAGES_FAIL:
             return {
                 ...state,
                 isFetching           : false,
                 fetchingMessagesError: action.error
+            };
+        case NEW_NOTIFICATION:
+            return {
+                ...state,
+                notifications: state.notifications.concat(action.notification)
             };
         default:
             return state;
