@@ -1,7 +1,6 @@
 import React from 'react';
 import './App.css';
 import {Dimmer, Grid, Header, Icon} from 'semantic-ui-react';
-import ColorPanel from './ColorPanel/ColorPanel';
 import SidePanel from './SidePanel/SidePanel';
 import {useSelector} from 'react-redux';
 import Messages from './Messages/Messages';
@@ -11,12 +10,11 @@ function App() {
     const currentChannel = useSelector(state => state.channels.currentChannel);
     return (
         <Grid columns='equal' className='app'>
-            <ColorPanel/>
             <SidePanel/>
             {
                 currentChannel ?
                     <>
-                        <Grid.Column style={{marginLeft: 320}}>
+                        <Grid.Column style={{marginLeft: 252}}>
                             <Messages/>
                         </Grid.Column>
                         <Grid.Column width={4}>
@@ -25,7 +23,7 @@ function App() {
                             }
                         </Grid.Column>
                     </> :
-                    <Grid.Column style={{marginLeft: 312}}>
+                    <Grid.Column style={{marginLeft: 252}}>
                         <Dimmer active>
                             <Header as='h2' icon inverted>
                                 <Icon name='chat'/>

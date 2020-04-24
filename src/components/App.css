@@ -9,12 +9,13 @@ body,
 .messages {
     height: 360px;
     overflow-y: scroll;
+    max-width: unset !important;
 }
 
 .message__form {
     position: fixed !important;
     bottom: 1em;
-    margin-left: 320px !important;
+    margin-left: 265px !important;
     left: 0;
     right: 1em;
     z-index: 200;

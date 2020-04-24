@@ -42,6 +42,7 @@ export const fetchUsers = () => async (dispatch, getState) => {
         });
     });
 };
+
 export const userAddListener = state => async (dispatch, getState) => {
     if (state) {
         const currentUserID = getState().user.currentUser.id;
