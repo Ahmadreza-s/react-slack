@@ -20,10 +20,9 @@ const fetchChannelsFail = error => ({type: FETCH_CHANNELS_FAIL, error});
 export const fetchChannels = () => async dispatch => {
     dispatch(fetchChannelsStart());
     return new Promise(resolve => {
-        channelsRef.on('value', snap => {
+        channelsRef.once('value', snap => {
             const chs = [];
             Object.entries(snap.val()).forEach(([, ch]) => chs.push(ch));
-            channelsRef.off('value');
             dispatch(fetchChannelsSuccess(chs));
             resolve();
         });

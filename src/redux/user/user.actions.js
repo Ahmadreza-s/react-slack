@@ -30,13 +30,12 @@ export const fetchUsers = () => async (dispatch, getState) => {
             }
         });
 
-        usersRef.on('value', snap => {
+        usersRef.once('value', snap => {
             const users = [];
             Object.entries(snap.val()).forEach(([key, user]) => {
                 if (key !== currentUserID)
                     users.push({id: key, ...user, status: 'offline'});
             });
-            usersRef.off('value');
             dispatch(fetchUsersSuccess(users));
             resolve();
             //todo:fetchUsersFAIL
