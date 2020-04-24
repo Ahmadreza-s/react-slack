@@ -107,49 +107,46 @@ export const fetchMessages = channel => async dispatch => {
 };
 
 const newMessage = message => ({type: NEW_MESSAGE, message});
-export const newMessagesListener = state => async (dispatch, getState) => {
-    const users = getState().user.users;
-    const currentUser = getState().user.currentUser;
-    const getChannelId = userId => userId < currentUser.id ? `${userId}/${currentUser.id}` : `${currentUser.id}/${userId}`;
-    const channels = getState().channels.channels.concat(users.map(user => ({
-        id       : getChannelId(user.id),
-        isPrivate: true
-    })));
-
+export const newMessagesListener = (state, isPrivate, channelId) => async (dispatch, getState) => {
     if (state) {
-        const currentChannel = getState().channels.currentChannel;
-        channels.forEach(channel => {
-            //https://stackoverflow.com/a/48158673   :
-            //faghat akharin payam hayi ke ezafe mishe ro listen mikonim
-            //ke betunim bahash notificaion befrestim
-            const startKey = getMessagesRef(channel.isPrivate).push().key;
 
-            getMessagesRef(channel.isPrivate)
-                .child(channel.id)
-                .orderByKey()
-                .startAt(startKey)
-                .on('child_added', snap => {
-                    const messages = getState().messages.messages;
-                    const message = {id: snap.key, ...snap.val()};
+        //https://stackoverflow.com/a/48158673   :
+        //faghat akharin payam hayi ke ezafe mishe ro listen mikonim
+        //ke betunim bahash notificaion befrestim
 
-                    if (currentChannel.id === channel.id) {
-                        if (!messages.find(msg => msg.id === message.id))
-                            dispatch(newMessage(message));
-                    }
-                    else
-                        dispatch({
-                            type        : NEW_NOTIFICATION,
-                            notification: {
-                                messageId: message.id,
-                                channelId: channel.id
-                            }
-                        });
-                });
-        });
+        const startKey = getMessagesRef(isPrivate)
+            .child(channelId)
+            .push()
+            .key;
 
+        getMessagesRef(isPrivate)
+            .child(channelId)
+            .orderByKey()
+            .startAt(startKey)
+            .on('child_added', snap => {
+                const messages = getState().messages.messages;
+                const message = {id: snap.key, ...snap.val()};
+                const currentChannel = getState().channels.currentChannel;
+
+                if (currentChannel && currentChannel.id === channelId) {
+                    if (!messages.find(msg => msg.id === message.id))
+                        dispatch(newMessage(message));
+                }
+                else
+                    dispatch({
+                        type        : NEW_NOTIFICATION,
+                        notification: {
+                            messageId: message.id,
+                            channelId: channelId
+                        }
+                    });
+            });
     }
-    else
-        channels.forEach(channel => {
-            getMessagesRef(channel.isPrivate).child(channel.id).off('child_added');
-        });
+    else {
+        const channels = getState().channels.channels;
+        if (channels.length > 0)
+            channels.forEach(channel => getMessagesRef(isPrivate)
+                .child(channel.id)
+                .off('child_added'));
+    }
 };

@@ -37,7 +37,7 @@ export const fetchUsers = () => async (dispatch, getState) => {
                     users.push({id: key, ...user, status: 'offline'});
             });
             dispatch(fetchUsersSuccess(users));
-            resolve();
+            resolve(users);
             //todo:fetchUsersFAIL
         });
     });

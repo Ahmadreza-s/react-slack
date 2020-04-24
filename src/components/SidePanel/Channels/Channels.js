@@ -5,6 +5,7 @@ import {channelAddListener, fetchChannels, selectChannel} from '../../../redux/c
 import ChannelsList from './ChannelsList/ChannelsList';
 import ChannelsModal from './ChannelsModal/ChannelsModal';
 import Spinner from '../../Spinner/Spinner';
+import {newMessagesListener} from '../../../redux/messages/messages.actions';
 
 const channelsRef = firebase.database().ref('channels');
 
@@ -20,8 +21,14 @@ const Channels = () => {
 
     React.useEffect(() => {
         dispatch(fetchChannels())
-            .then(() => dispatch(channelAddListener(true)));
-        return () => dispatch(channelAddListener(false));
+            .then((chs) => {
+                chs.forEach(ch => dispatch(newMessagesListener(true, false, ch.id)));
+                dispatch(channelAddListener(true));
+            });
+        return () => {
+            dispatch(newMessagesListener(false, false));
+            dispatch(channelAddListener(false));
+        };
     }, []);
 
     const handleChange = e => {

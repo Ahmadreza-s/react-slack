@@ -4,6 +4,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {fetchUsers, userAddListener, userStatusChangeListener} from '../../../redux/user/user.actions';
 import Spinner from '../../Spinner/Spinner';
 import {selectChannel} from '../../../redux/channels/channels.actions';
+import {newMessagesListener} from '../../../redux/messages/messages.actions';
 
 const DirectMessages = () => {
     const currentUser = useSelector(state => state.user.currentUser);
@@ -14,13 +15,15 @@ const DirectMessages = () => {
     const dispatch = useDispatch();
     React.useEffect(() => {
         dispatch(fetchUsers())
-            .then(() => {
+            .then(userss => {
+                userss.forEach(user => dispatch(newMessagesListener(true, true, getChannelId(user.id))));
                 dispatch(userAddListener(true));
                 dispatch(userStatusChangeListener(true));
             });
         return () => {
+            dispatch(newMessagesListener(false, true));
             dispatch(userStatusChangeListener(false));
-            return dispatch(userAddListener(false));
+            dispatch(userAddListener(false));
         };
     }, [dispatch]);
 

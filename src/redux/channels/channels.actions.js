@@ -24,7 +24,7 @@ export const fetchChannels = () => async dispatch => {
             const chs = [];
             Object.entries(snap.val()).forEach(([, ch]) => chs.push(ch));
             dispatch(fetchChannelsSuccess(chs));
-            resolve();
+            resolve(chs);
         });
         //todo:fetchChannelsFail
     });

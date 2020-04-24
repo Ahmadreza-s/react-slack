@@ -3,7 +3,7 @@ import MessagesHeader from './MessagesHeader/MessagesHeader';
 import {Comment, Segment} from 'semantic-ui-react';
 import MessagesForm from './MessagesForm/MessagesForm';
 import {useDispatch, useSelector} from 'react-redux';
-import {fetchMessages, newMessagesListener} from '../../redux/messages/messages.actions';
+import {fetchMessages} from '../../redux/messages/messages.actions';
 import Spinner from '../Spinner/Spinner';
 import Message from './Message/Message';
 
@@ -16,9 +16,7 @@ const Messages = () => {
 
     const dispatch = useDispatch();
     React.useEffect(() => {
-        dispatch(fetchMessages(currentChannel))
-            .then(() => dispatch(newMessagesListener(true)));
-        return () => dispatch(newMessagesListener(false));
+        dispatch(fetchMessages(currentChannel));
     }, [currentChannel, dispatch]);
 
     React.useEffect(() => {
